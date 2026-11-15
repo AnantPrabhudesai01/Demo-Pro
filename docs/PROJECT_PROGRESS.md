@@ -22,6 +22,12 @@
 - Relational schema defined in `docs/DATABASE.md`.
 - Learning progress curriculum registered in `docs/LEARNING_PROGRESS.md`.
 - Concept checklist established in `docs/CONCEPT_CHECKLIST.md`.
+- Built core Dashboard shell (`app/(dashboard)/dashboard/page.js`).
+- Built Projects module (`app/(dashboard)/projects/page.js`) with search, status filtering, and project creation modal.
+- Built Dynamic Project Route (`app/(dashboard)/projects/[projectId]/page.js`) demonstrating route parameters.
+- Built Tasks, Teams, Analytics, and Settings pages.
+- Built custom `app/not-found.js` 404 handler.
+- Completed Book 1, Lesson 1.1 with interactive embedded `TaskPreview` component.
 
 ---
 
