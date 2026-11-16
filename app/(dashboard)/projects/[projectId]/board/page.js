@@ -6,15 +6,15 @@ import { ArrowLeft, Sparkles, Layers, CheckSquare, Calendar, Users, LayoutDashbo
 
 export default async function ProjectBoardPage({ params }) {
   const { projectId } = await params;
-  const project = db.getProjectById(projectId);
+  const project = await db.getProjectById(projectId);
 
   if (!project) {
     notFound();
   }
 
-  const tasks = db.getTasks({ projectId });
-  const allProjects = db.getProjects();
-  const members = db.getUsers();
+  const tasks = await db.getTasks({ projectId });
+  const allProjects = await db.getProjects();
+  const members = await db.getUsers();
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
