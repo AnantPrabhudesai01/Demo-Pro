@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { CURRICULUM } from '@/content/learning-books/curriculum';
 import { LESSON_1_1 } from '@/content/learning-books/book-1-javascript-foundations/chapter-1-variables-and-data-structures/lesson-1-variables-scope';
+import { LESSON_0_1 } from '@/content/learning-books/book-1-javascript-foundations/chapter-0-developer-workflow-and-git/lesson-1-git-workflows';
 import { LessonContent } from '@/components/learn/LessonContent';
 import Link from 'next/link';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
@@ -18,12 +19,29 @@ export default async function LessonPage({ params }) {
   const lessonMeta = chapter.lessons.find(l => l.slug === lessonSlug);
   if (!lessonMeta) return notFound();
 
-  // If this is lesson 1.1, return the complete 21-section lesson
+  // If this is lesson 0.1 (Git & GitHub)
+  if (lessonSlug === 'git-and-github-workflows') {
+    return (
+      <LessonContent
+        lesson={LESSON_0_1}
+        prevLesson={null}
+        nextLesson={{
+          title: '1.1 Variables, Scope & Primitives',
+          href: `/learn/${bookSlug}/variables-and-data-structures/variables-scope-primitives`,
+        }}
+      />
+    );
+  }
+
+  // If this is lesson 1.1 (Variables & Scope)
   if (lessonSlug === 'variables-scope-primitives') {
     return (
       <LessonContent
         lesson={LESSON_1_1}
-        prevLesson={null}
+        prevLesson={{
+          title: '0.1 Git & GitHub Workflows',
+          href: `/learn/${bookSlug}/developer-workflow-and-git/git-and-github-workflows`,
+        }}
         nextLesson={{
           title: '1.2 Reference Equality & Immutability',
           href: `/learn/${bookSlug}/${chapterSlug}/immutability-in-practice`,

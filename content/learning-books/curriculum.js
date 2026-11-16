@@ -7,6 +7,22 @@ export const CURRICULUM = [
     icon: 'FileCode2',
     chapters: [
       {
+        id: 'b1-c0',
+        slug: 'developer-workflow-and-git',
+        title: 'Chapter 0: Developer Tools & Git Workflow',
+        description: 'Master the 4 Git stages, daily staging and commit workflows, conventional commits, and GitHub cloud synchronization.',
+        lessons: [
+          {
+            id: 'b1-c0-l1',
+            slug: 'git-and-github-workflows',
+            title: '0.1 Professional Git & GitHub: Commits, Branches & Push',
+            objective: 'Understand git add, commit, push, branch management, and syncing to GitHub with confidence.',
+            status: 'COMPLETED',
+            duration: '15 min',
+          },
+        ],
+      },
+      {
         id: 'b1-c1',
         slug: 'variables-and-data-structures',
         title: 'Chapter 1: Variables, Scope, and Data Structures',

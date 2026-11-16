@@ -1,5 +1,6 @@
 import './globals.css';
 import { ThemeProvider } from '@/components/shared/ThemeProvider';
+import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata = {
   title: 'WorkSpace – Project Management & Interactive Learning Platform',
@@ -11,7 +12,9 @@ export default function RootLayout({ children }) {
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className="antialiased min-h-screen selection:bg-blue-500 selection:text-white">
         <ThemeProvider>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
