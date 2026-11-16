@@ -99,4 +99,4 @@
   - `app/(dashboard)/analytics/page.js` (Live dashboard telemetry connected to /api/analytics with sprint charts and team throughput)
   - `app/(dashboard)/teams/page.js` (Live team member directory connected to /api/members with invite modal)
   - `app/(dashboard)/settings/page.js` (User profile and notifications settings connected to AuthContext)
-- **Validation:** Zero mock placeholders, verified REST endpoints, error boundaries in place, full-stack bidirectional state synchronization across all views.
+- **Validation:** Zero mock placeholders, verified REST endpoints, error boundaries in place, full-stack bidirectional state synchronization across all views. Added `getUsers()` / `getMembers()` schema aliases and awaited dynamic database calls in project pages.
