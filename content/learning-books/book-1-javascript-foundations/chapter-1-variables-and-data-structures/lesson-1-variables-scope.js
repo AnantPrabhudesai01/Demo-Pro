@@ -4,113 +4,202 @@ export const LESSON_1_1 = {
   bookSlug: 'javascript-foundations',
   chapterSlug: 'variables-and-data-structures',
   lessonSlug: 'variables-scope-primitives',
-  title: 'Lesson 1.1: Variables, Scope, and Primitive vs Reference Types in React',
+  title: 'Lesson 1.1: Variables, Scope, and Primitive vs Reference Types',
+  subtitle: 'Master JavaScript memory pointers, block scope, and why React re-renders depend on referential immutability.',
+  duration: '20 min read',
+  difficulty: 'Foundational',
 
-  learningObjective: `By the end of this lesson, you will be able to:
-1. Distinguish between 'const' and 'let' and explain why 'var' should never be used in modern React.
-2. Differentiate between Primitive values (stored by value) and Objects/Arrays (stored by reference in memory).
-3. Explain why directly mutating an object or array in React causes subtle, silent bugs where the UI fails to update.
-4. Predict variable scope (block scope vs function scope) and avoid temporal dead zone (TDZ) traps.`,
-
-  prerequisites: [
-    'Basic familiarity with reading code or text in a code editor.',
-    'No prior React experience required — we build the mental foundation here first.'
+  learningObjectives: [
+    {
+      id: 1,
+      title: "Master 'const' vs 'let' vs 'var'",
+      detail: "Understand block scoping, avoid temporal dead zones (TDZ), and eliminate variable leakage across component re-renders."
+    },
+    {
+      id: 2,
+      title: "Understand Stack vs Heap Memory",
+      detail: "Differentiate between Primitive values stored by value and Objects/Arrays stored by memory address (reference)."
+    },
+    {
+      id: 3,
+      title: "The React Re-render Law: Referential Identity",
+      detail: "Explain why directly mutating an object in React causes silent bugs where the UI refuses to update on screen."
+    },
+    {
+      id: 4,
+      title: "Immutable State Updates with Spread (...)",
+      detail: "Use the spread operator to produce new memory pointers, guaranteeing reliable React reconciliation."
+    }
   ],
 
-  conceptExplanation: `In JavaScript, every piece of data you handle inside a component or function lives in computer memory. How that data is stored and referenced determines whether React knows when to re-render your screen.
+  prerequisites: [
+    'Basic familiarity with reading JavaScript code.',
+    'No prior React experience required — we establish the core mental foundation here first.'
+  ],
 
-### 1. 'const' vs 'let'
-In modern JavaScript, we declare variables with either 'const' or 'let':
-- **const**: Declares a block-scoped identifier that cannot be reassigned to a different value. 90% of your React component variables (hooks, props, helper functions, derived calculations) should be declared with 'const'.
-- **let**: Declares a block-scoped variable that CAN be reassigned later. We use 'let' for counters in traditional loops or values that are genuinely reassigned within a block.
-- **Why not 'var'?**: 'var' is function-scoped (or globally scoped if declared outside a function) and gets "hoisted" to the top of its scope as 'undefined'. This causes variable leakage across 'if' blocks and loops, creating unpredictable bugs. 'const' and 'let' are strictly block-scoped (confined within the curly braces '{}' where they are defined).
-
-### 2. Primitive Values vs. Reference Values (The Golden React Concept)
-This is the single most common reason beginners struggle with React state:
-- **Primitives** (number, string, boolean, null, undefined, symbol, bigint):
-  These values are stored directly in the execution stack. When you compare two primitives ('42 === 42' or '"WorkSpace" === "WorkSpace"'), JavaScript checks the **actual value**.
-- **Objects and Arrays (Reference Types)**:
-  An object or array is NOT stored directly in the variable. Instead, the variable only holds a **memory address (a pointer/reference)** pointing to where the object's data sits in the heap.
-  When JavaScript compares two objects ('objA === objB'), it does NOT check their internal contents; it checks **whether both variables point to the exact same memory address** (referential identity).
-
-### Why this matters in React:
-React state updates rely on shallow referential equality checks (Object.is). If you modify the inside of an existing object:
-\`\`\`javascript
-project.name = "Updated Project"; // Mutating the existing object!
-setProject(project);              // React checks: is project === project? YES! Same memory address.
-// RESULT: React assumes nothing changed and SKIPS re-rendering the UI!
-\`\`\`
-To tell React that data changed, you must create a **new object in memory** (immutability), which we demonstrate below.`,
-
-  analogy: `Think of a Primitive value like a five-dollar bill in your wallet: if someone gives you another five-dollar bill, you literally hold a distinct second bill of the same value.
-Think of an Object or Array like a Google Doc link (URL) sent to you:
-If you give that link to a friend, you did not create a new document — you both hold the same link pointing to the same document in the cloud. If your friend edits paragraph 1, your document changes too.
-In React, if you want to propose a revision without confusing the system, you must click **"Make a Copy"** (new URL/new memory location) and edit your new copy. React compares the link addresses: if the link is different, React updates the screen.`,
-
-  syntax: `// 1. Primitive declaration
-const projectName = "SaaS Launchpad"; // Cannot be reassigned
-let taskCount = 0;                   // Can be reassigned: taskCount = 1
-
-// 2. Object declaration (Reference in memory)
-const task = {
-  id: "task-101",
-  title: "Design Navigation",
-  completed: false
-};
-
-// 3. Creating a new reference (Immutable copy)
-const updatedTask = {
-  ...task,            // Copy all properties
-  completed: true     // Overwrite specific property with new value
+  // Structured concept sections (rendered with bespoke cards, tables, and comparison blocks)
+  conceptSections: [
+    {
+      id: 'declarations',
+      title: "1. Variable Declarations: 'const' vs 'let' vs 'var'",
+      lead: "In modern JavaScript and React, how you declare a variable determines its scope, lifetime, and whether it can cause subtle bugs.",
+      tableData: [
+        {
+          keyword: 'const',
+          scope: 'Block Scope { }',
+          reassignable: 'No',
+          hoisting: 'No (TDZ)',
+          usage: '90% of your React code (hooks, functions, props, derived values)'
+        },
+        {
+          keyword: 'let',
+          scope: 'Block Scope { }',
+          reassignable: 'Yes',
+          hoisting: 'No (TDZ)',
+          usage: 'Loop counters or values genuinely reassigned inside a function'
+        },
+        {
+          keyword: 'var',
+          scope: 'Function / Global',
+          reassignable: 'Yes',
+          hoisting: 'Yes (as undefined)',
+          usage: 'Never use in modern React (causes variable leakage bugs)'
+        }
+      ],
+      ruleOfThumb: "Always default to 'const'. Use 'let' only when you explicitly intend to reassign the identifier. Never use 'var'."
+    },
+    {
+      id: 'memory-model',
+      title: '2. The JavaScript Memory Model: Primitives vs Reference Types',
+      lead: 'This is the single most important concept in JavaScript for understanding React state updates.',
+      primitives: {
+        types: ['string', 'number', 'boolean', 'null', 'undefined', 'symbol', 'bigint'],
+        location: 'Stored directly in the Call Stack (by value)',
+        comparison: 'Compared by value: (42 === 42 is true)',
+        behavior: 'Copying a primitive creates an independent copy of the value.'
+      },
+      references: {
+        types: ['Object', 'Array', 'Function', 'Date'],
+        location: 'Stored in the Heap (variable holds a memory address pointer)',
+        comparison: 'Compared by memory address: ({ id: 1 } === { id: 1 } is FALSE)',
+        behavior: 'Copying an object only copies the memory pointer, NOT the data itself!'
+      }
+    },
+    {
+      id: 'react-state-law',
+      title: '3. The React Re-render Law: Why Object Mutation Fails',
+      lead: 'React uses shallow referential equality (Object.is) to decide if a component needs to re-render.',
+      badCode: `// ANTI-PATTERN: Direct Object Mutation (UI WILL NOT UPDATE!)
+const handleComplete = () => {
+  task.status = "completed"; // Mutating the existing object in memory
+  setTask(task);            // React checks: Object.is(task, task) -> TRUE!
+  // RESULT: React assumes nothing changed and SKIPS re-rendering!
 };`,
+      goodCode: `// CORRECT PATTERN: Immutability (UI UPDATES INSTANTLY!)
+const handleComplete = () => {
+  // Return a BRAND NEW object with the spread operator (...)
+  setTask(prevTask => ({
+    ...prevTask,            // Copy existing properties
+    status: "completed",    // Override changed property
+  }));
+  // React checks: Object.is(prevTask, newTask) -> FALSE (new memory pointer!)
+  // RESULT: React triggers re-render and updates the DOM immediately!
+};`,
+      explanation: 'Because React compares memory addresses rather than inspecting every nested property, you must create a new object in memory to signal that data has changed.'
+    },
+    {
+      id: 'derived-state',
+      title: '4. Derived State: Avoid Storing Redundant Values',
+      lead: 'A common beginner mistake is creating unnecessary state variables for values that can be calculated on the fly.',
+      rule: 'If a value can be computed synchronously from existing state or props during render, do NOT store it in useState.'
+    }
+  ],
 
-  standaloneExample: `// Standalone JavaScript Demo:
-// Run this directly in Node.js or browser console
+  analogy: {
+    title: 'The Five-Dollar Bill vs. The Google Doc Link',
+    primitiveTitle: 'Primitive Value = Cash in Your Pocket',
+    primitiveText: 'If you have a $5 bill and give your friend a $5 bill, you each hold a separate physical bill. If your friend tears their bill, your bill remains intact.',
+    referenceTitle: 'Reference Value = Shared Google Doc URL',
+    referenceText: 'If you email a Google Doc link (URL) to a collaborator, you did not create a second document. You both hold the exact same pointer to the same document in the cloud. If your collaborator deletes paragraph 1, your document changes too.',
+    reactTakeaway: 'In React, if you want to propose a revision, you must click "Make a Copy" (allocate a new memory pointer) so React can compare the old document link with the new document link.'
+  },
 
-const originalTask = { id: 1, title: "Set up project", status: "todo" };
+  syntaxCards: [
+    {
+      title: 'Primitive Variables',
+      code: `const projectName = "WorkSpace"; // Cannot be reassigned
+let activeTaskCount = 0;        // Can be reassigned: activeTaskCount = 1;`
+    },
+    {
+      title: 'Object Reference (Heap Memory)',
+      code: `const task = {
+  id: "task-101",
+  title: "Build Navigation Shell",
+  completed: false,
+};`
+    },
+    {
+      title: 'Immutable Update with Spread (...)',
+      code: `const updatedTask = {
+  ...task,          // Shallow-copies all properties
+  completed: true,  // Overwrites specific property with new value
+}; // updatedTask has a BRAND NEW memory address!`
+    }
+  ],
 
-// Anti-Pattern: Direct Mutation
-const mutatedTask = originalTask;
-mutatedTask.status = "done";
+  standaloneDemo: {
+    title: 'Standalone Node.js / Browser Console Experiment',
+    code: `// Test 1: Primitive Value Equality
+const valA = "WorkSpace";
+const valB = "WorkSpace";
+console.log(valA === valB); // Output: true (Values are identical)
 
-console.log(originalTask.status); // Outputs "done"! Original was changed accidentally!
-console.log(originalTask === mutatedTask); // true (Same memory reference)
+// Test 2: Object Reference Equality
+const taskA = { id: 1, title: "Deploy" };
+const taskB = { id: 1, title: "Deploy" };
+console.log(taskA === taskB); // Output: false! (Different memory addresses)
 
-// Correct Pattern: Immutability (Shallow Copy)
-const freshTask = { id: 2, title: "Build sidebar", status: "todo" };
-const updatedFreshTask = { ...freshTask, status: "done" };
-
-console.log(freshTask.status);        // "todo" (Original preserved intact!)
-console.log(updatedFreshTask.status); // "done"
-console.log(freshTask === updatedFreshTask); // false (New memory reference! React will re-render!)`,
+// Test 3: The Mutation Pitfall
+const taskRef = taskA;
+taskRef.title = "Updated Title";
+console.log(taskA.title); // Output: "Updated Title" (taskA was mutated!)`,
+    takeaway: 'Notice how taskA and taskB have identical contents, yet taskA === taskB is false because they point to different locations in heap memory.'
+  },
 
   stepByStep: [
     {
       step: 1,
-      title: 'Inspect how WorkSpace stores a Task object',
-      goal: 'Define a task with standard SaaS properties (id, title, priority, status).',
-      why: 'Real applications operate on structured objects, not raw primitive variables alone.',
+      title: 'Define the Task Object Shape',
       file: 'components/dashboard/TaskPreview.js',
-      description: 'We represent a task with typed fields and render its attributes cleanly.'
+      description: 'Model a realistic SaaS task with id, title, priority, status, and updatedAt timestamp.'
     },
     {
       step: 2,
-      title: 'Simulate updating the task status',
-      goal: 'Create an updater function that produces a brand new reference instead of mutating the task in place.',
-      why: 'Demonstrates the exact mechanism that React useState updater functions require.',
+      title: 'Initialize Reactive State with useState',
       file: 'components/dashboard/TaskPreview.js',
-      description: 'We show before and after state snapshots and log their referential identity.'
+      description: 'Pass the task object as the initial state snapshot.'
+    },
+    {
+      step: 3,
+      title: 'Write a Pure State Updater Function',
+      file: 'components/dashboard/TaskPreview.js',
+      description: 'Use the functional updater form (prevTask => ...) and object spread ({ ...prevTask }) to return a new memory pointer.'
+    },
+    {
+      step: 4,
+      title: 'Calculate Derived State on the Fly',
+      file: 'components/dashboard/TaskPreview.js',
+      description: 'Compute isCompleted directly from task.status without declaring a separate useState variable.'
     }
   ],
 
-  exactCode: `// components/dashboard/TaskPreview.js
-'use client';
+  exactCode: `'use client';
 
 import { useState } from 'react';
-import { CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Circle, AlertCircle, RefreshCw } from 'lucide-react';
 
 export function TaskPreview() {
-  // Step A: Declare state using a clean object reference
+  // Step A: Declare state using an object reference
   const [task, setTask] = useState({
     id: 'task-1',
     title: 'Initialize Next.js App Router and Tailwind Shell',
@@ -124,8 +213,8 @@ export function TaskPreview() {
     setTask((prevTask) => {
       const nextStatus = prevTask.status === 'completed' ? 'in_progress' : 'completed';
       
-      // We return a BRAND NEW object with the spread operator (...prevTask).
-      // This gives React a new memory pointer, guaranteeing an instant UI update!
+      // CRITICAL: We return a brand new object using the spread operator (...prevTask).
+      // This allocates a new memory address, ensuring React detects the state update!
       return {
         ...prevTask,
         status: nextStatus,
@@ -134,15 +223,16 @@ export function TaskPreview() {
     });
   };
 
+  // Step C: Derived state (calculated dynamically during render)
   const isCompleted = task.status === 'completed';
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-blue-500/50">
-      <div className="flex items-start justify-between gap-4">
+    <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-blue-500/40">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-start gap-3">
           <button
             onClick={handleToggleStatus}
-            className="mt-0.5 text-muted-foreground hover:text-primary transition-colors"
+            className="mt-0.5 text-muted-foreground hover:text-primary transition-colors focus:outline-none"
             title="Click to toggle status"
           >
             {isCompleted ? (
@@ -152,165 +242,120 @@ export function TaskPreview() {
             )}
           </button>
           <div>
-            <h4 className={\`font-medium text-sm text-foreground \${isCompleted ? 'line-through opacity-60' : ''}\`}>
+            <h4 className={\`font-medium text-sm text-foreground transition-all \${isCompleted ? 'line-through opacity-60' : ''}\`}>
               {task.title}
             </h4>
-            <div className="mt-1.5 flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="mt-1.5 flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1 rounded bg-accent px-2 py-0.5 font-medium text-accent-foreground uppercase tracking-wider text-[10px]">
                 <AlertCircle className="h-3 w-3" />
                 {task.priority}
               </span>
               <span>Updated: {task.updatedAt}</span>
-              <span className={\`font-medium \${isCompleted ? 'text-emerald-500' : 'text-blue-500'}\`}>
+              <span className={\`font-medium capitalize \${isCompleted ? 'text-emerald-500' : 'text-blue-500'}\`}>
                 {task.status.replace('_', ' ')}
               </span>
             </div>
           </div>
         </div>
 
-        <button
-          onClick={handleToggleStatus}
-          className="rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
-        >
-          {isCompleted ? 'Reopen Task' : 'Complete Task'}
-        </button>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            onClick={handleToggleStatus}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary-hover transition-colors shadow-sm"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            {isCompleted ? 'Reopen Task' : 'Complete Task'}
+          </button>
+        </div>
       </div>
     </div>
   );
 }`,
 
-  lineByLineExplanation: [
+  lineExplanations: [
     {
-      lines: "1",
+      lines: '1',
       code: "'use client';",
-      explanation: "Tells Next.js App Router that this component contains interactive client-side React code (state hooks and click handlers), rendering on the client after SSR."
+      explanation: 'Directs Next.js App Router to package this component for client-side interactivity, enabling useState and click handlers.'
     },
     {
-      lines: "7-13",
-      code: "const [task, setTask] = useState({ ... });",
-      explanation: "Initializes React state with an initial object. 'task' is the current snapshot reference; 'setTask' is the dispatch function used to trigger updates."
+      lines: '8–14',
+      code: 'const [task, setTask] = useState({ ... });',
+      explanation: 'Initializes state. task is the state snapshot reference; setTask is the dispatch function.'
     },
     {
-      lines: "16-27",
-      code: "setTask((prevTask) => ({ ...prevTask, status: nextStatus }));",
-      explanation: "CRITICAL: Uses the functional updater form '(prevTask) => ...'. Instead of modifying prevTask directly (e.g. prevTask.status = nextStatus), we return a NEW object literal '{ ...prevTask, status: nextStatus }'. This ensures referential inequality (new memory address), prompting React to schedule a re-render."
+      lines: '17–28',
+      code: 'setTask((prevTask) => ({ ...prevTask, status: nextStatus }));',
+      explanation: 'Uses the functional updater form. Creates a new object literal with spread, guaranteeing referential inequality.'
     },
     {
-      lines: "29",
+      lines: '31',
       code: "const isCompleted = task.status === 'completed';",
-      explanation: "Derived state! Notice we do NOT store 'isCompleted' in a separate useState. It is calculated synchronously during render from 'task.status'. Keeping derived values out of state prevents desynchronization bugs."
+      explanation: 'Derived state: computed synchronously during render. Eliminates redundant useState variables.'
     }
   ],
 
-  conceptMapping: [
-    {
-      concept: "Block Scope (const / let)",
-      relationship: "Variables inside handleToggleStatus are isolated within that function; they do not leak or overwrite outer component variables."
-    },
-    {
-      concept: "Referential Equality (Object.is)",
-      relationship: "React checks if oldState === newState. Returning '{ ...prevTask }' creates a new reference so the equality check returns false, triggering a render."
-    },
-    {
-      concept: "Derived State vs. Stored State",
-      relationship: "Deriving 'isCompleted' from 'task.status' directly in render avoids managing two separate states that could get out of sync."
-    }
+  executionFlow: [
+    { step: 1, title: 'User Click', desc: 'User clicks "Complete Task" button in browser.' },
+    { step: 2, title: 'Event Trigger', desc: 'Synthetic onClick handler calls handleToggleStatus.' },
+    { step: 3, title: 'State Dispatch', desc: 'setTask functional updater receives the current state snapshot (prevTask).' },
+    { step: 4, title: 'Heap Allocation', desc: 'JavaScript allocates a BRAND NEW object in heap memory via spread (...).' },
+    { step: 5, title: 'Object.is Comparison', desc: 'React checks Object.is(oldTask, newTask) -> Evaluates to FALSE.' },
+    { step: 6, title: 'Reconciliation', desc: 'React schedules re-render and updates the DOM with green checkmark.' }
   ],
-
-  executionFlow: `User clicks 'Complete Task' button
-    ↓
-Browser triggers the onClick event
-    ↓
-handleToggleStatus handler executes
-    ↓
-setTask((prevTask) => ({ ...prevTask, status: 'completed' })) is called
-    ↓
-JavaScript creates a BRAND NEW object in heap memory
-    ↓
-React compares old task reference with new task reference (Object.is)
-    ↓
-References are DIFFERENT (referential inequality)
-    ↓
-React schedules a re-render of TaskPreview
-    ↓
-Component re-executes with task.status === 'completed'
-    ↓
-Virtual DOM diff applies green CheckCircle2 and strikethrough to real DOM
-    ↓
-User sees updated task UI instantly!`,
-
-  expectedOutput: `In the browser:
-- A card displaying the task title: "Initialize Next.js App Router and Tailwind Shell".
-- A badge showing priority "HIGH" in blue/indigo and status "in progress".
-- When you click "Complete Task":
-  1. The radio circle turns into a green checkmark icon.
-  2. The title text receives a strikethrough line and subtle opacity.
-  3. The status text changes to "completed" in green.
-  4. The timestamp updates to the current second.
-  5. The action button text switches to "Reopen Task".`,
 
   testingCases: [
     {
-      type: 'Normal Case',
+      type: 'Normal Toggle',
       action: 'Click "Complete Task"',
-      expected: 'Status toggles to completed, icon changes to green checkmark, timestamp updates.'
+      expected: 'Icon turns green checkmark, title gets strikethrough, button flips to "Reopen Task".'
     },
     {
-      type: 'Toggle Back',
+      type: 'Reverse Toggle',
       action: 'Click "Reopen Task"',
-      expected: 'Status toggles back to in_progress, checkmark reverts to hollow circle.'
+      expected: 'Status reverts to in_progress, checkmark reverts to hollow circle.'
     },
     {
-      type: 'Rapid Clicks (Stress test)',
-      action: 'Click the button 5 times quickly',
-      expected: 'Because we used functional state updates (prevTask => ...), every click is processed accurately without dropping updates.'
+      type: 'Rapid Clicks',
+      action: 'Click button 5 times rapidly',
+      expected: 'All updates queue accurately because functional updater form (prev => ...) is used.'
     }
   ],
 
   commonMistakes: [
     {
-      mistake: "Mutating state directly: task.status = 'completed'; setTask(task);",
-      whyWrong: "Because 'task' has the same memory reference as before, React's 'Object.is' check returns true. React believes nothing changed and skips re-rendering!",
-      correction: "Always create a new object: setTask(prev => ({ ...prev, status: 'completed' }));"
+      title: 'Direct Object Mutation',
+      bad: 'task.status = "completed"; setTask(task);',
+      why: 'task and task point to the identical memory address. Object.is returns true, so React skips rendering.',
+      fix: 'setTask(prev => ({ ...prev, status: "completed" }));'
     },
     {
-      mistake: "Declaring variables with 'var' inside loops or conditions.",
-      whyWrong: "'var' leaks outside the block and can overwrite other variables with the same name.",
-      correction: "Always default to 'const'. Use 'let' only when you intend to reassign the identifier."
+      title: 'Redundant Stored State',
+      bad: 'const [isCompleted, setIsCompleted] = useState(false);',
+      why: 'Forces you to keep two states in sync. If one fails, the UI displays contradictory information.',
+      fix: 'const isCompleted = task.status === "completed"; // Calculate in render'
     },
     {
-      mistake: "Storing derived values in separate state (e.g. const [isCompleted, setIsCompleted] = useState(false)).",
-      whyWrong: "You now have to remember to update two states in sync. If one fails, your UI displays contradictory data.",
-      correction: "Calculate derived values on the fly: const isCompleted = task.status === 'completed';"
+      title: 'Using var inside components',
+      bad: 'for (var i = 0; i < items.length; i++) { ... }',
+      why: 'var hoists to function scope and leaks across blocks, causing variable shadowing and race conditions.',
+      fix: 'Always use const (or let for loop counters).'
     }
   ],
 
   exercise: {
-    title: 'Independent Coding Exercise: Task Priority Cycler',
-    description: `Write a small function named 'cyclePriority' that takes a task object with priority ('low', 'medium', 'high', 'urgent') and returns a NEW task object with the next priority level in order:
-low → medium → high → urgent → low.
-Requirements:
-1. Do NOT mutate the original task.
-2. The original task object must remain completely unchanged.
-3. Return a new object with the updated priority.`,
+    title: 'Challenge: The Task Priority Cycler',
+    instruction: 'Write a pure JavaScript function named cyclePriority(task) that accepts a task object and returns a BRAND NEW task object with the next priority level in order:\n"low" → "medium" → "high" → "urgent" → "low"',
+    rules: [
+      'Do NOT mutate the original task (task.priority = ... is forbidden).',
+      'The original task object must remain completely unmodified.',
+      'Return a fresh object with the spread operator.'
+    ],
     hints: [
-      'Hint 1: Use an array of priorities: const priorities = ["low", "medium", "high", "urgent"];',
-      'Hint 2: Find the current index using priorities.indexOf(task.priority).',
-      'Hint 3: Use the modulo operator (%) to wrap around to 0 when reaching the end: (currentIndex + 1) % priorities.length.',
-      'Hint 4: Use object spread ({ ...task, priority: nextPriority }) to return a fresh reference.'
-    ]
-  },
-
-  workspaceImplementation: `In WorkSpace:
-- Every Task in our Project Board (/projects/[projectId]/board) is represented as an object with status, priority, title, and assigned team members.
-- When you drag a card from 'In Progress' to 'Completed', or change its priority in a dropdown, our Kanban state reducer uses object and array spread operators to construct new references.
-- This guarantees instant, flicker-free optimistic UI updates.`,
-
-  canWeBuildThis: {
-    verdict: 'YES – We can implement it now!',
-    reasons: [
-      'It only requires standard JavaScript objects, basic function execution, and modern const/let scoping.',
-      'We will immediately embed this TaskPreview component into our WorkSpace Dashboard shell to make it interactive.'
+      'Define an array of priorities: const levels = ["low", "medium", "high", "urgent"];',
+      'Find the current index: const idx = levels.indexOf(task.priority);',
+      'Compute the next index using modulo: const nextIdx = (idx + 1) % levels.length;',
+      'Return a new object: return { ...task, priority: levels[nextIdx] };'
     ]
   },
 
@@ -318,31 +363,24 @@ Requirements:
     {
       level: 'Beginner',
       question: 'What is the primary difference between let and const in JavaScript?',
-      answer: "'const' creates an identifier that cannot be reassigned to a new value after its initial declaration. 'let' allows reassignment. Both are block-scoped. Note that 'const' prevents reassignment of the variable identifier itself, but does NOT make the contents of an object or array immutable."
+      answer: 'const declares a block-scoped variable that cannot be reassigned to a new value. let declares a block-scoped variable that can be reassigned. Both exist in the Temporal Dead Zone (TDZ) before declaration. Note: const prevents reassigning the variable identifier, but does NOT make object properties immutable.'
     },
     {
       level: 'Intermediate',
-      question: 'Why does React state require immutable updates instead of direct mutation?',
-      answer: "React relies on shallow referential equality (Object.is) to quickly determine if component state has changed. If you mutate an object in place, its memory address remains unchanged, so React assumes no update occurred and avoids re-rendering. Creating a new object reference triggers the reconciliation pipeline."
+      question: 'Why does React state require immutable updates instead of mutating existing objects?',
+      answer: 'React relies on shallow referential equality checks (Object.is) for performance. If you mutate an object in place, its memory address remains unchanged, so React assumes nothing changed and skips re-rendering. Creating a new object reference triggers the reconciliation engine.'
     },
     {
       level: 'Practical Coding',
-      question: 'Given an array of tasks in React state: const [tasks, setTasks] = useState([...]), how do you update task with id = 2 to completed without mutating the array?',
-      answer: "setTasks(prevTasks => prevTasks.map(task => task.id === 2 ? { ...task, completed: true } : task));\nUsing map() creates a brand new array, and for the matching item, the object spread returns a new object reference, leaving all other items untouched."
+      question: 'Given an array of tasks in React state: const [tasks, setTasks] = useState([...]), how do you mark task #2 as completed without mutating the array?',
+      answer: 'setTasks(prev => prev.map(t => t.id === 2 ? { ...t, completed: true } : t));\nmap() creates a brand new array reference, and the object spread creates a new object reference for the matching item.'
     },
     {
-      level: 'Scenario-Based',
-      question: 'A teammate says: \"I updated the user profile object in my click handler, but my avatar component did not update on screen until I refreshed the page. Why?\"',
-      answer: "The teammate mutated the existing profile object (e.g. user.avatar = newUrl) and passed the same object back to state (setUser(user)). React compared the old and new object references, saw they were identical in memory, and skipped re-rendering. Solution: pass a fresh copy: setUser({ ...user, avatar: newUrl })."
+      level: 'Senior / Scenario',
+      question: 'A junior developer says: "I updated the user profile object in my click handler, but my avatar component did not update on screen until I refreshed the page. Why?"',
+      answer: 'The developer mutated the existing profile object (user.avatar = newUrl) and passed the same object back to state (setUser(user)). React compared the old and new object references, saw they were identical in memory, and skipped re-rendering. Solution: pass a fresh copy: setUser({ ...user, avatar: newUrl }).'
     }
   ],
-
-  chapterSummary: `In this foundational lesson, we established the core mental model that governs all React state management:
-1. 'const' and 'let' provide clean, block-scoped variable declarations that prevent accidental hoisting bugs.
-2. Primitives are compared by value; Objects and Arrays are compared by memory reference.
-3. React relies on referential comparison to trigger re-renders.
-4. Direct mutation breaks React reactivity. Always return fresh copies using the spread operator or array transformation methods.
-5. Derived state should be calculated on the fly during render, not stored in unnecessary separate useState variables.`,
 
   completionChecklist: [
     'I understand the difference between const, let, and why var is avoided.',

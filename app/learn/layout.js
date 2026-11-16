@@ -51,7 +51,7 @@ export default function LearnLayout({ children }) {
       {/* Main Body with Sidebar + Content */}
       <div className="flex flex-1">
         <BookSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="flex-1 overflow-y-auto px-4 py-8 sm:px-8 max-w-5xl mx-auto w-full">
+        <main className="flex-1 min-w-0 overflow-y-auto px-4 py-8 sm:px-8 lg:px-10 max-w-7xl mx-auto w-full">
           {children}
         </main>
       </div>
