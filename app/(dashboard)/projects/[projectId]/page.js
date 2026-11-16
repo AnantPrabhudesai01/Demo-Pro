@@ -41,7 +41,8 @@ export default async function ProjectDetailPage({ params }) {
     notFound();
   }
 
-  const tasks = await db.getTasks({ projectId });
+  const tasksData = await db.getTasks({ projectId });
+  const tasks = Array.isArray(tasksData) ? tasksData : (tasksData?.tasks || []);
   const completedTasks = tasks.filter(t => t.status === 'completed').length;
   const progressPct = tasks.length === 0 ? 0 : Math.round((completedTasks / tasks.length) * 100);
 

@@ -12,9 +12,13 @@ export default async function ProjectBoardPage({ params }) {
     notFound();
   }
 
-  const tasks = await db.getTasks({ projectId });
-  const allProjects = await db.getProjects();
-  const members = await db.getUsers();
+  const tasksData = await db.getTasks({ projectId });
+  const allProjectsData = await db.getProjects();
+  const membersData = await (db.getMembers ? db.getMembers() : (db.getUsers ? db.getUsers() : []));
+
+  const tasks = Array.isArray(tasksData) ? tasksData : (tasksData?.tasks || []);
+  const allProjects = Array.isArray(allProjectsData) ? allProjectsData : (allProjectsData?.projects || []);
+  const members = Array.isArray(membersData) ? membersData : (membersData?.members || []);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
