@@ -55,9 +55,11 @@ export default function ProjectsPage() {
       const res = await fetch('/api/projects');
       if (!res.ok) throw new Error('Failed to fetch projects');
       const data = await res.json();
-      setProjects(data);
+      const projectList = Array.isArray(data) ? data : (data.projects || []);
+      setProjects(projectList);
     } catch (err) {
       console.error('Projects fetch error:', err);
+      setProjects([]);
     } finally {
       setIsLoading(false);
     }
@@ -67,8 +69,9 @@ export default function ProjectsPage() {
     loadProjects();
   }, []);
 
-  // Filter projects
-  const filteredProjects = projects.filter((project) => {
+  // Filter projects safely
+  const projectList = Array.isArray(projects) ? projects : [];
+  const filteredProjects = projectList.filter((project) => {
     const matchesSearch = (project.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (project.description || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || project.status === statusFilter;
@@ -112,8 +115,9 @@ export default function ProjectsPage() {
           })
         });
         if (!res.ok) throw new Error('Failed to update project');
-        const updated = await res.json();
-        setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
+        const updatedData = await res.json();
+        const updated = updatedData.project || updatedData;
+        setProjects(prev => (Array.isArray(prev) ? prev : []).map(p => p.id === updated.id ? updated : p));
         showToast(`Project "${updated.name}" updated successfully!`);
       } else {
         // Create new project
@@ -130,8 +134,9 @@ export default function ProjectsPage() {
           })
         });
         if (!res.ok) throw new Error('Failed to create project');
-        const created = await res.json();
-        setProjects(prev => [created, ...prev]);
+        const createdData = await res.json();
+        const created = createdData.project || createdData;
+        setProjects(prev => [created, ...(Array.isArray(prev) ? prev : [])]);
         showToast(`Project "${created.name}" created successfully!`);
       }
       setIsModalOpen(false);

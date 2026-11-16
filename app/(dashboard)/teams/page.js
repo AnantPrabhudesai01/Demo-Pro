@@ -37,7 +37,8 @@ export default function TeamsPage() {
       const res = await fetch('/api/members');
       if (res.ok) {
         const data = await res.json();
-        setMembers(data);
+        const memberList = Array.isArray(data) ? data : (data.members || []);
+        setMembers(memberList);
       }
     } catch (err) {
       console.error('Failed to load members:', err);
@@ -67,8 +68,9 @@ export default function TeamsPage() {
         })
       });
       if (!res.ok) throw new Error('Invite failed');
-      const newMember = await res.json();
-      setMembers(prev => [...prev, newMember]);
+      const newMemberData = await res.json();
+      const newMember = newMemberData.member || newMemberData;
+      setMembers(prev => [...(Array.isArray(prev) ? prev : []), newMember]);
       setIsInviteOpen(false);
       setInviteName('');
       setInviteEmail('');

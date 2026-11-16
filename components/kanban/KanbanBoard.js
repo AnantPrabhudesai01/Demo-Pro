@@ -44,7 +44,8 @@ export default function KanbanBoard({
   projects = [],
   members = [] 
 }) {
-  const [tasks, setTasks] = useState(initialTasks);
+  const taskList = Array.isArray(initialTasks) ? initialTasks : (initialTasks.tasks || []);
+  const [tasks, setTasks] = useState(taskList);
   const [selectedTask, setSelectedTask] = useState(null);
   const [search, setSearch] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('all');
@@ -134,8 +135,9 @@ export default function KanbanBoard({
     }
   };
 
-  // Filter tasks
-  const filteredTasks = tasks.filter(t => {
+  // Filter tasks safely
+  const taskItems = Array.isArray(tasks) ? tasks : [];
+  const filteredTasks = taskItems.filter(t => {
     if (projectId && t.projectId !== projectId) return false;
     if (priorityFilter !== 'all' && t.priority !== priorityFilter) return false;
     if (search.trim()) {
@@ -149,12 +151,12 @@ export default function KanbanBoard({
 
   // Handle task detail updates from modal
   const handleModalTaskUpdated = (updated) => {
-    setTasks(prev => prev.map(t => t.id === updated.id ? updated : t));
+    setTasks(prev => (Array.isArray(prev) ? prev : []).map(t => t.id === updated.id ? updated : t));
     setSelectedTask(updated);
   };
 
   const handleModalTaskDeleted = (taskId) => {
-    setTasks(prev => prev.filter(t => t.id !== taskId));
+    setTasks(prev => (Array.isArray(prev) ? prev : []).filter(t => t.id !== taskId));
     setSelectedTask(null);
     showToast('Task permanently deleted');
   };
@@ -180,12 +182,13 @@ export default function KanbanBoard({
         })
       });
       if (!res.ok) throw new Error('Failed to create task');
-      const created = await res.json();
-      setTasks(prev => [created, ...prev]);
+      const createdData = await res.json();
+      const created = createdData.task || createdData;
+      setTasks(prev => [created, ...(Array.isArray(prev) ? prev : [])]);
       setCreateModalOpen(false);
       setNewTitle('');
       setNewDescription('');
-      showToast(`Task "${created.title.slice(0, 20)}..." created!`);
+      showToast(`Task "${(created.title || 'New Task').slice(0, 20)}..." created!`);
     } catch (err) {
       console.error(err);
       showToast('Error creating task. Please try again.');

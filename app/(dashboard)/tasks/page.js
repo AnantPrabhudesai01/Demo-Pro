@@ -69,12 +69,14 @@ export default function TasksPage() {
       ]);
       if (tasksRes.ok) {
         const tasksData = await tasksRes.json();
-        setTasks(tasksData);
+        const taskList = Array.isArray(tasksData) ? tasksData : (tasksData.tasks || []);
+        setTasks(taskList);
       }
       if (projsRes.ok) {
         const projsData = await projsRes.json();
-        setProjects(projsData);
-        if (projsData.length > 0) setNewProjectId(projsData[0].id);
+        const projList = Array.isArray(projsData) ? projsData : (projsData.projects || []);
+        setProjects(projList);
+        if (projList.length > 0) setNewProjectId(projList[0].id);
       }
     } catch (err) {
       console.error('Error fetching tasks data:', err);
@@ -129,8 +131,9 @@ export default function TasksPage() {
         })
       });
       if (!res.ok) throw new Error('Failed to create task');
-      const created = await res.json();
-      setTasks(prev => [created, ...prev]);
+      const createdData = await res.json();
+      const created = createdData.task || createdData;
+      setTasks(prev => [created, ...(Array.isArray(prev) ? prev : [])]);
       setCreateModalOpen(false);
       setNewTitle('');
       setNewDescription('');
@@ -143,7 +146,8 @@ export default function TasksPage() {
     }
   };
 
-  const filteredTasks = tasks.filter((t) => {
+  const taskList = Array.isArray(tasks) ? tasks : [];
+  const filteredTasks = taskList.filter((t) => {
     const matchesSearch = (t.title || '').toLowerCase().includes(search.toLowerCase()) ||
                           (t.description || '').toLowerCase().includes(search.toLowerCase());
     const matchesPriority = filterPriority === 'all' || t.priority === filterPriority;
